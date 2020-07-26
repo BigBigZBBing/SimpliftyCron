@@ -1,0 +1,242 @@
+.dbUI-cron {
+    position: relative;
+    height: 30px;
+    width: 300px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+.dbUI-cron .cron-input {
+    width: 240px;
+    height: 30px;
+    border-radius: 5px;
+    border: 0;
+    outline: none;
+    padding: 0 10px;
+}
+
+.dbUI-cron .cron-select {
+    position: absolute;
+    top: 0;
+    right: 100PX;
+    height: 100%;
+    width: 50px;
+    border: 0;
+    background-color: rgb(77, 150, 224);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.dbUI-cron .cron-clear {
+    position: absolute;
+    top: 0;
+    right: 50PX;
+    height: 100%;
+    width: 50px;
+    border: 0;
+    background-color: rgb(77, 150, 224);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.dbUI-cron .cron-analytice {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 50px;
+    border: 0;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background-color: rgb(144, 75, 209);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.dbUI-cron .cron-config {
+    display: none;
+    position: absolute;
+    top: 35px;
+    left: 0;
+    width: 470px;
+    height: 160px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.dbUI-cron .cron-config.show {
+    display: block;
+    background-color: white;
+}
+
+.dbUI-cron .cron-config .menu {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 2px;
+    border-bottom: 1px solid lightgray;
+}
+
+.dbUI-cron .cron-config .menu li {
+    list-style: none;
+    float: left;
+    padding: 0 20px;
+    margin: 0;
+    height: 100%;
+    line-height: 200%;
+    cursor: pointer;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.dbUI-cron .cron-config .menu li.this {
+    background-color: rgb(77, 150, 224);
+    color: white;
+}
+
+.dbUI-cron .cron-config .menu li:hover {
+    background-color: rgb(77, 150, 224);
+    color: white;
+}
+
+.dbUI-cron .cron-config .panel {
+    position: relative;
+    height: 120px;
+}
+
+.dbUI-cron .cron-config .panel .variety {
+    height: 40px;
+}
+
+.dbUI-cron .cron-config .panel .variety input[type="radio"] {
+    margin: 10px;
+}
+
+.dbUI-cron .cron-config .panel .tools {
+    display: flex;
+    align-items: center;
+    height: 80px;
+    padding: 0 10px;
+}
+
+.dbUI-cron .cron-config .panel .tools .explain {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.dbUI-cron .cron-config .panel .tools .explain.assign {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.dbUI-cron .cron-config .panel .tools .explain label {
+    display: block;
+    white-space: nowrap;
+}
+
+.dbUI-cron .cron-config .panel .tools .annotation {
+    display: block;
+    height: 100%;
+    margin-left: 20px;
+}
+
+.dbUI-range {
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+.dbUI-range input {
+    height: 30px;
+    width: 45px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    outline: none;
+    padding: 0 18px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+.dbUI-range .meter {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 180px;
+}
+
+.dbUI-range .meter.show {
+    display: block;
+}
+
+.dbUI-range ul {
+    float: left;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    margin: 5px 0;
+    margin-right: 5px;
+    padding: 0;
+    width: 75px;
+    user-select: none;
+}
+
+.dbUI-range ul li {
+    list-style: none;
+    text-align: center;
+    background-color: white;
+}
+
+.dbUI-range ul li:hover {
+    background-image: radial-gradient(50px 40px at 50% 50%, rgb(77, 150, 224), transparent);
+}
+
+.dbUI-range ul li.this {
+    background-image: radial-gradient(50px 40px at 50% 50%, rgb(77, 150, 224), transparent);
+}
+
+.dbUI-range ul li:first-child {
+    cursor: pointer;
+    background-color: rgb(77, 150, 224);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.dbUI-range ul li:last-child {
+    cursor: pointer;
+    background-color: rgb(77, 150, 224);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.noshow {
+    display: none;
+}
+
+.isshow {
+    display: block;
+}

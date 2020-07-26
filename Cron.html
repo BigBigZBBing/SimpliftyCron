@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="dbUI-Cron.css">
+
+</head>
+
+<body>
+    <div class="dbUI-cron">
+        <input id="cronText" class="cron-input" readonly type="text">
+        <a class="cron-select">Cron</a>
+        <a class="cron-clear">重置</a>
+        <a class="cron-analytice" onclick="CronAnalytice(this)">解析</a>
+        <div class="cron-config">
+        </div>
+    </div>
+    <script src="dbUI-Cron.js"></script>
+    <script src="CronAnaly.js"></script>
+    <script>
+        function CronAnalytice(obj) {
+            var input = document.getElementById("cronText");
+            console.log($db.CronAnalytice(input.value, new Date(), 14));
+        }
+    </script>
+</body>
+
+</html>
