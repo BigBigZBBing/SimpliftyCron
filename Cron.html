@@ -11,19 +11,19 @@
 
 <body>
     <div class="dbUI-cron">
-        <input id="cronText" class="cron-input" readonly type="text">
+        <input class="cron-input" id="cronBtn" readonly type="text">
         <a class="cron-select">Cron</a>
         <a class="cron-clear">重置</a>
-        <a class="cron-analytice" onclick="CronAnalytice(this)">解析</a>
+        <a class="cron-analytice" onclick="CronAnalytice()">解析</a>
         <div class="cron-config">
         </div>
     </div>
     <script src="dbUI-Cron.js"></script>
     <script src="CronAnaly.js"></script>
     <script>
-        function CronAnalytice(obj) {
-            var input = document.getElementById("cronText");
-            console.log($db.CronAnalytice(input.value, new Date(), 14));
+        function CronAnalytice() {
+            var input = document.getElementById("cronBtn");
+            console.log($db.CronAnalytice(input.value, new Date()));
         }
     </script>
 </body>

@@ -1,5 +1,11 @@
+/**
+ * dbUI核心驱动沙箱
+ */
 ; eval(function (p, a, c, k, e, r) { e = function (c) { return (c < a ? '' : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36)) }; if (!''.replace(/^/, String)) { while (c--) r[e(c)] = k[c] || e(c); k = [function (e) { return r[e] }]; e = function () { return '\\w+' }; c = 1 }; while (c--) if (k[c]) p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]); return p }('(5(g){g.$6={};g.$6.v=v;g.$6.w=w;g.$6.x=x;g.$6.m=m;g.$6.n=n;5 v(a){y b=2;3(a.e!=2&&a.e!=""){y b=P.Q(a.e)}3(a.c!=2&&a.c!=""&&o.z(a.c)&&b!=2){a.c.A(4=>{b.R.S(4)})}3(a.t!=2&&a.t!=""&&b!=2){b.I=a.t}3(a.h!=2&&a.h!=""&&b!=2){b.I=a.h}3(a.B!=2&&o.z(a.B)&&b!=2){a.B.A(4=>{J(b,4.7,4.T)})}3(a.C!=2&&o.z(a.C)&&b!=2){a.C.A(4=>{b.U(4.7,4.D)})}3(a.p!=2&&a.p!=""&&b!=2){a.p.V(b)}3(a.q!=2&&a.q!=""&&b!=2){a.q.W.X(b,a.q)}3(a.E!=2&&a.E!=""&&b!=2){a.E.j(b)}8 b}5 J(a,e,b,c){a.Y(e,b,c!=2?F:Z)}5 w(b,c,d,e){y t=2;10.11(b,c,{12:F,13:F,G:5(){3(d!=2){d.j(K)}8 t},H:5(a){t=a;3(e!=2){e.j(K)}}})}5 x(a){r s=o.14(a);3(a[0]===" ")s.L(0,1);3(a[a.k-1]===" ")s.L(a.k-1,1);8 s.15("")}5 m(a,b){3(a.9.k<=0)8;M(r i=0;i<a.9.k;i++){b.16(a.9[i]);3(a.9[i].9.k>0){m(a.9[i],b)}}}5 n(a,b,c,d,e,f){3(N(a)!="O")8;3(!f)f=a;3(c)M(r l 17 a)3(a.18(l))3(N(a[l])=="O")n(a[l],b,c,a,l,f);r 4=19 1a(a,{G(u,7){8 b.G.j(f,u,7,e)},H(u,7,D){b.H.j(f,u,7,D,e)}});3(d){d[e]=4}1b{a=4}}}(1c));', 62, 75, '||null|if|obj|function|db|key|return|children||||||||||call|length|ikey|allChild|defineProxy|Array||pa|let|arr||target|ctElement|defineProp|trim|var|isArray|forEach|event|attr|value|ape|true|get|set|innerText|eventList|this|splice|for|typeof|object|document|createElement|classList|add|fc|setAttribute|appendChild|parentNode|insertBefore|addEventListener|false|Object|defineProperty|enumerable|configurable|from|join|push|in|hasOwnProperty|new|Proxy|else|window'.split('|'), 0, {}));
 
+/**
+ * 业务沙箱
+ */
 (function ($db) {
     var crons = document.getElementsByClassName("dbUI-cron");
     for (let i = 0; i < crons.length; i++) {
@@ -9,6 +15,7 @@
         let clear = ele.getElementsByClassName("cron-clear")[0];
         let config = ele.getElementsByClassName("cron-config")[0];
 
+        //制定规则
         let Rule =
             `if(target.range) {
                 if(Number(target.value)<Number(target.range.split("-")[0])){
@@ -20,19 +27,28 @@
                 for(let ikey in this){
                     if(ikey == prev) break;
                     if(target.value!=target.default&&this[ikey].value==this[ikey].default){
-                        this[ikey].value=this[ikey].range.split("-")[0];
+                        if(ikey != "MM"){
+                            this[ikey].value=this[ikey].range.split("-")[0];
+                        }
                     }
-                    if(prev=="ww" && target.value != "?" && ikey=="dd") {
-                        this[ikey].value="?";
+                    if(prev=="dd" && this["dd"].value == "?") {
+                        this["ww"].value="*";
                     }
-                    if(prev=="ww" && target.value != "?" && ikey=="MM") {
-                        this[ikey].value="*";
+                    if(prev=="MM" && this["dd"].value != "?") {
+                        this["ww"].value="?";
+                    }
+                    if(prev=="ww" && this["ww"].value != "?" && this["dd"].value != "?") {
+                        this["dd"].value="?";
+                    }
+                    if(prev=="ww" && this["ww"].value == "?" && this["dd"].value == "?") {
+                        this["dd"].value="*";
                     }
                 }
-                
             }`;
 
+        //面板控制台
         let Class = {
+            //分类
             Cron: {
                 ss: {
                     title: "秒",
@@ -81,12 +97,12 @@
                     value: "",
                     default: "*",
                     range: "1-12",
-                    tabs: ["general", "noassign", "range", "delayed", "assign"],
+                    tabs: ["general", "range", "delayed", "assign"],
                     verify: Rule
                 },
                 ww: {
                     title: "周",
-                    remark: "",
+                    remark: "号",
                     remark1: "天",
                     value: "",
                     default: "?",
@@ -108,6 +124,7 @@
                     tabs: [],
                 }
             },
+            //工具箱
             Tools: {
                 general: {
                     zh: "general",
@@ -122,7 +139,7 @@
                     cn: "不指定",
                     default: "?",
                     template: function (Cron, tools) {
-                        $db.ctElement({ p: tools, e: "label", t: "日 月 周 只能存在一个不指定" });
+                        $db.ctElement({ p: tools, e: "label", t: "日 周 只能存在一个不指定" });
                     }
                 },
                 range: {
@@ -241,6 +258,7 @@
             }
         }
 
+        //代理驱动
         $db.defineProxy(Class.Cron, {
             get(target, key, prev) {
                 return target[key];
@@ -253,16 +271,11 @@
             }
         }, true);
 
-        Class.Cron.ss.value = Class.Cron.ss.default;
-        Class.Cron.mm.value = Class.Cron.mm.default;
-        Class.Cron.hh.value = Class.Cron.hh.default;
-        Class.Cron.dd.value = Class.Cron.dd.default;
-        Class.Cron.MM.value = Class.Cron.MM.default;
-        Class.Cron.ww.value = Class.Cron.ww.default;
-        Class.Cron.yy.value = Class.Cron.yy.default;
+        classDefault();
 
-        var variety;
-        var tools;
+        //整体框架
+        let variety;
+        let tools;
         let panel = $db.ctElement({
             p: config, e: "div", c: ["panel"], ape: function () {
                 variety = $db.ctElement({ p: this, e: "div", c: ["variety"] });
@@ -270,81 +283,85 @@
             }
         });
 
-        $db.ctElement({
-            pa: panel, e: "ul", c: ["menu"], ape: function () {
-                let cron = Object.keys(Class.Cron);
-                for (let t = 0; t < cron.length; t++) {
-                    let key = cron[t];
-                    let li = $db.ctElement({
-                        p: this, e: "li", t: Class.Cron[key].title, event: [
-                            {
-                                key: "click", fc: function () {
-                                    let curCron = Class.Cron[key],
-                                        bors = this.parentNode.children;;
-                                    menuClick(curCron);
-                                    for (let i = 0; i < bors.length; i++) {
-                                        if (bors[i].classList.contains("this")) {
-                                            bors[i].classList.remove("this");
+
+        {//菜单驱动
+            $db.ctElement({
+                pa: panel, e: "ul", c: ["menu"], ape: function () {
+                    let cron = Object.keys(Class.Cron);
+                    for (let t = 0; t < cron.length; t++) {
+                        let key = cron[t];
+                        let li = $db.ctElement({
+                            p: this, e: "li", t: Class.Cron[key].title, event: [
+                                {
+                                    key: "click", fc: function () {
+                                        let curCron = Class.Cron[key],
+                                            bors = this.parentNode.children;;
+                                        menuClick(curCron);
+                                        for (let i = 0; i < bors.length; i++) {
+                                            if (bors[i].classList.contains("this")) {
+                                                bors[i].classList.remove("this");
+                                            }
                                         }
+                                        this.classList.add("this");
                                     }
-                                    this.classList.add("this");
+                                }
+                            ]
+                        });
+                        if (key == "ss") li.click();
+                    }
+                }
+            });
+
+            function menuClick(Cron) {
+                variety.innerHTML = "";
+                for (let i = 0; i < Cron.tabs.length; i++) {
+                    let tab = Class.Tools[Cron.tabs[i]];
+                    let label = $db.ctElement({
+                        p: variety, e: "label", event: [
+                            {
+                                key: "click", fc: function (e) {
+                                    varietyClick(e, Cron, tab);
                                 }
                             }
-                        ]
-                    });
-                    if (key == "ss") li.click();
-                }
-            }
-        });
-
-        function menuClick(Cron) {
-            variety.innerHTML = "";
-            for (let i = 0; i < Cron.tabs.length; i++) {
-                let tab = Class.Tools[Cron.tabs[i]];
-                let label = $db.ctElement({
-                    p: variety, e: "label", event: [
-                        {
-                            key: "click", fc: function (e) {
-                                varietyClick(e, Cron, tab);
-                            }
+                        ], ape: function () {
+                            $db.ctElement({
+                                p: this, e: "input", attr: [
+                                    { key: "type", value: "radio" },
+                                    { key: "name", value: "crontype" },
+                                    { key: "data-value", value: tab.zh }
+                                ]
+                            }); this.innerHTML += tab.cn;
                         }
-                    ], ape: function () {
-                        $db.ctElement({
-                            p: this, e: "input", attr: [
-                                { key: "type", value: "radio" },
-                                { key: "name", value: "crontype" },
-                                { key: "data-value", value: tab.zh }
-                            ]
-                        }); this.innerHTML += tab.cn;
+                    });
+                    if (Cron.value == "*" && Cron.tabs[i] == "general") {
+                        label.click();
                     }
-                });
-                if (Cron.value == "*" && Cron.tabs[i] == "general") {
-                    label.click();
+                    else if (Cron.value == "?" && Cron.tabs[i] == "noassign") {
+                        label.click();
+                    }
+                    else if (Cron.value.indexOf("-") > -1 && Cron.tabs[i] == "range") {
+                        label.click();
+                    }
+                    else if (Cron.value.indexOf("/") > -1 && Cron.tabs[i] == "delayed") {
+                        label.click();
+                    }
+                    else if ((Cron.value.indexOf(",") > -1 || /^\d+$/.test(Cron.value)) && Cron.tabs[i] == "assign") {
+                        label.click();
+                    }
                 }
-                else if (Cron.value == "?" && Cron.tabs[i] == "noassign") {
-                    label.click();
-                }
-                else if (Cron.value.indexOf("-") > -1 && Cron.tabs[i] == "range") {
-                    label.click();
-                }
-                else if (Cron.value.indexOf("/") > -1 && Cron.tabs[i] == "delayed") {
-                    label.click();
-                }
-                else if ((Cron.value.indexOf(",") > -1 || /^\d+$/.test(Cron.value)) && Cron.tabs[i] == "assign") {
-                    label.click();
-                }
+
             }
 
+            function varietyClick(e, Cron, Tool) {
+                tools.innerHTML = "";
+                if (Tool.default)
+                    Cron.value = Tool.default;
+                if (Tool.template)
+                    Tool.template(Cron, tools);
+            }
         }
 
-        function varietyClick(e, Cron, Tool) {
-            tools.innerHTML = "";
-            if (Tool.default)
-                Cron.value = Tool.default;
-            if (Tool.template)
-                Tool.template(Cron, tools);
-        }
-
+        //面板开关
         select.addEventListener("click", function () {
             //隐藏配置栏
             if (config.classList.contains("show")) {
@@ -354,7 +371,14 @@
                 config.classList.add("show");
             }
         }, false);
+
+        //重置按钮
         clear.addEventListener("click", function () {
+            classDefault();
+        }, false);
+
+        //充值
+        function classDefault() {
             Class.Cron.ss.value = Class.Cron.ss.default;
             Class.Cron.mm.value = Class.Cron.mm.default;
             Class.Cron.hh.value = Class.Cron.hh.default;
@@ -362,13 +386,16 @@
             Class.Cron.MM.value = Class.Cron.MM.default;
             Class.Cron.ww.value = Class.Cron.ww.default;
             Class.Cron.yy.value = Class.Cron.yy.default;
-        }, false);
+        }
     }
 }($db));
 
+/**
+ * 范围选择框
+ */
 (function ($db) {
     function rangeRender() {
-        var range = document.getElementsByClassName("dbUI-range");
+        let range = document.getElementsByClassName("dbUI-range");
         for (let i = 0; i < range.length; i++) {
             const ele = range[i],
                 select = { left: "", right: "" };
@@ -378,26 +405,54 @@
                     pa: ele, e: "div", c: ["dbUI-range"], attr: [
                         { key: "style", value: ele.getAttribute("style") }
                     ], ape: function () {
-                        let format = ele.getAttribute("format");
-                        let separator = ele.getAttribute("separator");
-                        var input = $db.ctElement({
-                            p: this, e: "input", attr: [
-                                { key: "id", value: ele.getAttribute("id") },
-                                { key: "name", value: ele.getAttribute("name") },
-                                { key: "type", value: "text" },
-                                { key: "readonly", value: "" },
-                                { key: "format", value: format },
-                                { key: "separator", value: separator }
+                        let format = ele.getAttribute("format"),
+                            separator = ele.getAttribute("separator"),
+                            input = $db.ctElement({
+                                p: this, e: "input", attr: [
+                                    { key: "id", value: ele.getAttribute("id") },
+                                    { key: "name", value: ele.getAttribute("name") },
+                                    { key: "type", value: "text" },
+                                    { key: "readonly", value: "" },
+                                    { key: "format", value: format },
+                                    { key: "separator", value: separator }
+                                ],
+                                event: [
+                                    { key: "click", fc: selectClick },
+                                    { key: "mousedown", fc: noselect }
+                                ]
+                            }),
+                            prevBtn = [
+                                $db.ctElement({
+                                    e: "li", t: "▲", event: [
+                                        { key: "mousedown", fc: Prev },
+                                        { key: "mouseup", fc: Close },
+                                    ]
+                                }),
+                                $db.ctElement({
+                                    e: "li", t: "▲", event: [
+                                        { key: "mousedown", fc: Prev },
+                                        { key: "mouseup", fc: Close },
+                                    ]
+                                })
                             ],
-                            event: [
-                                { key: "click", fc: selectClick },
-                                { key: "mousedown", fc: noselect }
-                            ]
-                        });
+                            nextBtn = [
+                                $db.ctElement({
+                                    e: "li", t: "▼", event: [
+                                        { key: "mousedown", fc: Next },
+                                        { key: "mouseup", fc: Close },
+                                    ]
+                                }),
+                                $db.ctElement({
+                                    e: "li", t: "▼", event: [
+                                        { key: "mousedown", fc: Next },
+                                        { key: "mouseup", fc: Close },
+                                    ]
+                                })
+                            ];
 
                         function noselect(e) { e.preventDefault(); }
 
-                        $db.ctElement({
+                        let meter = $db.ctElement({
                             p: this, e: "div", c: ["meter"], ape: function () {
                                 $db.ctElement({ p: this, e: "ul", attr: [{ key: "data-align", value: "left" }] });
                                 $db.ctElement({ p: this, e: "ul", attr: [{ key: "data-align", value: "right" }] });
@@ -413,8 +468,8 @@
                                 range = format.split("-"),//范围
                                 start = Number(range[0]),//范围开始
                                 init = val == "";
-                            if (!init) input.value = [this.left, $db.trim(vals[1])].join(` ${separator} `);
-                            else input.value = [this.left, start].join(` ${separator} `);
+                            if (!init) input.value = [this.left, $db.trim(vals[1])].join(`${separator}`);
+                            else input.value = [this.left, start].join(`${separator}`);
                             input.onchange();
                             Render(0);
                         });
@@ -425,8 +480,8 @@
                                 range = format.split("-"),//范围
                                 start = Number(range[0]),//范围开始
                                 init = val == "";
-                            if (!init) input.value = [$db.trim(vals[0]), this.right].join(` ${separator} `);
-                            else input.value = [start, this.right].join(` ${separator} `);
+                            if (!init) input.value = [$db.trim(vals[0]), this.right].join(`${separator}`);
+                            else input.value = [start, this.right].join(`${separator}`);
                             input.onchange();
                             Render(1);
                         });
@@ -444,6 +499,7 @@
 
                             //两个滚动选择条
                             let uls = meter.getElementsByTagName("ul");
+
                             //打开选择面板
                             if (meterList.contains("show")) {
                                 meterList.remove("show");
@@ -453,16 +509,7 @@
                                 meterList.add("show");
                                 document.addEventListener("click", globel, false);
                             }
-                            //点击无关元素就隐藏
-                            function globel(e) {
-                                let arr = [];
-                                $db.allChild(input.nextElementSibling, arr);
-                                if (prevArr.indexOf(e.target) == -1) {
-                                    if (meterList.contains("show")) {
-                                        meterList.remove("show");
-                                    }
-                                }
-                            }
+
                             //注入范围数组
                             for (let i = start; i <= end; i++)
                                 rangeArr.push(i);
@@ -496,12 +543,8 @@
                                 if (!init) point = Number(vals[index]);
 
                                 //上一个
-                                $db.ctElement({
-                                    p: item, e: "li", t: "▲", event: [
-                                        { key: "mousedown", fc: Prev },
-                                        { key: "mouseup", fc: Close },
-                                    ]
-                                });
+                                item.appendChild(prevBtn[index]);
+
                                 for (let i = 0; i < 5; i++) {
                                     //获取数组值的点位
                                     let index = rangeArr.indexOf(point),
@@ -528,18 +571,15 @@
                                         event: [{ key: "click", fc: SureClick }]
                                     });
                                 }
+
                                 //下一个
-                                $db.ctElement({
-                                    p: item, e: "li", t: "▼", event: [
-                                        { key: "mousedown", fc: Next },
-                                        { key: "mouseup", fc: Close },
-                                    ]
-                                });
+                                item.appendChild(nextBtn[index]);
                             }
 
                             select.left = lpoint.toString();
                             select.right = rpoint.toString();
                         }
+
                         function SureClick() {
                             let val = input.value,
                                 vals = val.split(separator),
@@ -559,6 +599,7 @@
                                     break;
                             }
                         }
+
                         var prevtime;
                         var nexttime;
                         //轮询点击上一个
@@ -567,7 +608,7 @@
                                 allele = part.children;
                             prevtime = setInterval(function () {
                                 allele[2].click();
-                            }, 100);
+                            }, 60);
                         }
                         //轮询点击下一个
                         function Next() {
@@ -575,7 +616,7 @@
                                 allele = part.children;
                             nexttime = setInterval(function () {
                                 allele[4].click();
-                            }, 100);
+                            }, 60);
                         }
                         //取消轮询
                         function Close() {
@@ -583,6 +624,17 @@
                             if (nexttime != null) clearInterval(nexttime);
                             prevtime = null;
                             nexttime = null;
+                        }
+                        //点击无关元素就隐藏
+                        function globel(e) {
+                            let arr = [];
+                            $db.allChild(meter, arr);
+                            if (prevArr.indexOf(e.target) == -1) {
+                                if (meter.classList.contains("show")) {
+                                    meter.classList.remove("show");
+                                    document.removeEventListener("click", globel, false);
+                                }
+                            }
                         }
                     }
                 });
