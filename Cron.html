@@ -10,20 +10,38 @@
 </head>
 
 <body>
-    <div class="dbUI-cron">
-        <input class="cron-input" id="cronBtn" readonly type="text">
+    <div class="dbUI-cron" old="old">
+        <input class="cron-input" id="cronBtn" type="text">
         <a class="cron-select">Cron</a>
         <a class="cron-clear">重置</a>
         <a class="cron-analytice" onclick="CronAnalytice()">解析</a>
-        <div class="cron-config">
+        <div class="cron-config" id="config">
         </div>
+    </div>
+    <div id="contanier">
+
     </div>
     <script src="dbUI-Cron.js"></script>
     <script src="CronAnaly.js"></script>
     <script>
         function CronAnalytice() {
-            var input = document.getElementById("cronBtn");
-            console.log($db.CronAnalytice(input.value, new Date()));
+            let input = document.getElementById("cronBtn");
+            let config = document.getElementById("config");
+            let dates = $db.CronAnalytice(input.value, new Date());
+            let contanier = document.getElementById("contanier");
+            contanier.innerHTML = "";
+            if (config.classList.contains("show")) config.classList.remove("show");
+            for (let index = 0; index < dates.length; index++) {
+                const element = new Date(dates[index]);
+                $db.ctElement({
+                    p: contanier,
+                    e: "p",
+                    t: `${element.getFullYear()}-${fillZero(element.getMonth() + 1, 2)}-${fillZero(element.getDate(), 2)} ${fillZero(element.getHours(), 2)}:${fillZero(element.getMinutes(), 2)}:${fillZero(element.getSeconds(), 2)}`
+                });
+            }
+            function fillZero(num, m) {
+                return (Array(m).join(0) + num).slice(-m);
+            }
         }
     </script>
 </body>

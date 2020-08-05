@@ -59,16 +59,18 @@
                 if (c.Seconds[nowTime.getSeconds()] == 1 && c.Minutes[nowTime.getMinutes()] == 1 && c.Hours[nowTime.getHours()] == 1 && c.Month[nowTime.getMonth()] == 1 && c.Year[nowTime.getFullYear() - 2019] == 1) {
                     if (arr[3] != "?") {
                         Days(c, arr[3], new Date(nowTime.getFullYear(), nowTime.getMonth(), 0).getDate(), nowTime);
-                        let DayOfWeek = ((nowTime.getDay() - 1) + 6) % 7;
+                        let DayOfWeek = ((nowTime.getDay()) + 6) % 7;
                         if (c.Days[nowTime.getDate() - 1] == 1 && c.Weeks[DayOfWeek] == 1) {
                             datetimes.push(new Date(nowTime));
                         }
                     }
                     else {
                         Weeks(c, arr[5], new Date(nowTime.getFullYear(), nowTime.getMonth(), 0).getDate(), nowTime);
-                        let DayOfWeek = ((nowTime.getDay() - 1) + 6) % 7;
+                        let DayOfWeek = ((nowTime.getDay()) + 6) % 7;
                         if (c.Days[nowTime.getDate() - 1] == 1 && c.Weeks[DayOfWeek] == 1) {
-                            datetimes.push(new Date(nowTime));
+                            let weekdate = new Date(nowTime);
+                            weekdate.setDate(weekdate.getDate() - 1);
+                            datetimes.push(weekdate);
                         }
                     }
                 }
@@ -327,14 +329,14 @@
         now.setDate(now.getDate() + (1 - now.getDate()));
         d.setMonth(d.getMonth() + 1);
         d.setSeconds(d.getSeconds() - 1);
-        let DayOfWeek = (((d.getDay() - 1) + 6) % 7) + 1;
+        let DayOfWeek = (((d.getDay()) + 6) % 7) + 1;
         let a = DayOfWeek >= i ? DayOfWeek - i : 7 + DayOfWeek - i;
         return new Date(now.getFullYear(), now.getMonth(), 0).getDate() - a;
     }
     function GetWeek(i, j, now) {
         let day = 0;
         let d = new Date(now.getFullYear(), now.getMonth(), 1);
-        let DayOfWeek = (((d.getDay() - 1) + 6) % 7) + 1;
+        let DayOfWeek = (((d.getDay()) + 6) % 7) + 1;
         if (i >= DayOfWeek) {
             day = (7 - DayOfWeek + 1) + 7 * (j - 2) + i;
         }

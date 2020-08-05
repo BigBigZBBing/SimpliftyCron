@@ -10,6 +10,9 @@
     var crons = document.getElementsByClassName("dbUI-cron");
     for (let i = 0; i < crons.length; i++) {
         const ele = crons[i];
+        let old = "";
+        if (ele.getAttribute("old"))
+            old = ele.getAttribute("old");
         let input = ele.getElementsByClassName("cron-input")[0];
         let select = ele.getElementsByClassName("cron-select")[0];
         let clear = ele.getElementsByClassName("cron-clear")[0];
@@ -31,8 +34,11 @@
                             this[ikey].value=this[ikey].range.split("-")[0];
                         }
                     }
-                    if(prev=="dd" && this["dd"].value == "?") {
+                    if(prev=="dd" && this["dd"].value == "?" && this["ww"].value == "?") {
                         this["ww"].value="*";
+                    }
+                    if(prev=="dd" && this["dd"].value != "?") {
+                        this["ww"].value="?";
                     }
                     if(prev=="MM" && this["dd"].value != "?") {
                         this["ww"].value="?";
@@ -57,7 +63,7 @@
                     value: "",
                     default: "*",
                     range: "0-59",
-                    tabs: ["general", "range", "delayed", "assign"],
+                    tabs: ["general", old + "range", old + "delayed", "assign"],
                     verify: Rule
                 },
                 mm: {
@@ -67,7 +73,7 @@
                     value: "",
                     default: "*",
                     range: "0-59",
-                    tabs: ["general", "range", "delayed", "assign"],
+                    tabs: ["general", old + "range", old + "delayed", "assign"],
                     verify: Rule
                 },
                 hh: {
@@ -77,7 +83,7 @@
                     value: "",
                     default: "*",
                     range: "0-23",
-                    tabs: ["general", "range", "delayed", "assign"],
+                    tabs: ["general", old + "range", old + "delayed", "assign"],
                     verify: Rule
                 },
                 dd: {
@@ -87,7 +93,7 @@
                     value: "",
                     default: "*",
                     range: "1-31",
-                    tabs: ["general", "noassign", "range", "delayed", "assign"],
+                    tabs: ["general", "noassign", old + "range", old + "delayed", "assign"],
                     verify: Rule
                 },
                 MM: {
@@ -97,18 +103,27 @@
                     value: "",
                     default: "*",
                     range: "1-12",
-                    tabs: ["general", "range", "delayed", "assign"],
+                    tabs: ["general", old + "range", old + "delayed", "assign"],
                     verify: Rule
                 },
                 ww: {
                     title: "周",
-                    remark: "号",
-                    remark1: "天",
+                    remark: "星期",
+                    remark1: "周",
                     value: "",
                     default: "?",
                     range: "1-7",
-                    tabs: ["noassign", "range", "delayed", "assign"],
-                    verify: Rule
+                    tabs: ["noassign", old + "range", old + "weekfixed", "assign"],
+                    verify: Rule,
+                    mapping: [
+                        { p: 1, n: "星期日" },
+                        { p: 2, n: "星期一" },
+                        { p: 3, n: "星期二" },
+                        { p: 4, n: "星期三" },
+                        { p: 5, n: "星期四" },
+                        { p: 6, n: "星期五" },
+                        { p: 7, n: "星期六" },
+                    ]
                 },
                 yy: {
                     title: "年",
@@ -161,18 +176,30 @@
                             }
                         });
                         function rangeChange() {
-                            let label = _div.getElementsByTagName("label")[0],
-                                delayed = _div.getElementsByTagName("input")[0],
-                                value = delayed.value,
-                                start = $db.trim(value.split("-")[0]),
-                                end = $db.trim(value.split("-")[1]);
-                            label.innerText = `从${start}${Cron.remark}到${end}${Cron.remark}每${Cron.remark1}执行一次`;
-                            Cron.value = `${start}-${end}`;
+                            try {
+                                let label = _div.getElementsByTagName("label")[0],
+                                    delayed = _div.getElementsByTagName("input")[0],
+                                    value = delayed.value,
+                                    start = $db.trim(value.split("-")[0]),
+                                    end = $db.trim(value.split("-")[1]);
+                                if (Cron.mapping)
+                                    label.innerHTML = `从${Cron.mapping.filter(x => x.p == Number(start))[0].n}到${Cron.mapping.filter(x => x.p == Number(end))[0].n}每${Cron.remark1}执行一次`;
+                                else
+                                    label.innerHTML = `从${start}${Cron.remark}到${end}${Cron.remark}每${Cron.remark1}执行一次`;
+                                if (Number(start) > Number(end)) {
+                                    start = end;
+                                    label.innerHTML += `<div style="color:red;">第一个时间不能大于第二个时间</div>`;
+                                }
+                                Cron.value = `${start}-${end}`;
+                            } catch {
+
+                            }
                         }
                         $db.rangeRender();
                         _div.getElementsByTagName("input")[0].onchange = rangeChange;
                         if (Cron.value.indexOf("-") > -1)
                             _div.getElementsByTagName("input")[0].value = Cron.value;
+                        rangeChange();
                     }
                 },
                 delayed: {
@@ -194,18 +221,23 @@
                             }
                         });
                         function rangeChange() {
-                            let label = _div.getElementsByTagName("label")[0],
-                                delayed = _div.getElementsByTagName("input")[0],
-                                value = delayed.value,
-                                start = $db.trim(value.split("/")[0]),
-                                end = $db.trim(value.split("/")[1]);
-                            label.innerText = `从${start}${Cron.remark}开始,每${end}${Cron.remark1}执行一次`;
-                            Cron.value = `${start}/${end}`;
+                            try {
+                                let label = _div.getElementsByTagName("label")[0],
+                                    delayed = _div.getElementsByTagName("input")[0],
+                                    value = delayed.value,
+                                    start = $db.trim(value.split("/")[0]),
+                                    end = $db.trim(value.split("/")[1]);
+                                label.innerText = `从${start}${Cron.remark}开始,每${Number(end) == 0 ? "1" : end}${Cron.remark1}执行一次`;
+                                Cron.value = `${start}/${end}`;
+                            } catch  {
+
+                            }
                         }
                         $db.rangeRender();
                         _div.getElementsByTagName("input")[0].onchange = rangeChange;
                         if (Cron.value.indexOf("/") > -1)
                             _div.getElementsByTagName("input")[0].value = Cron.value;
+                        rangeChange();
                     }
                 },
                 assign: {
@@ -254,6 +286,189 @@
                                 inputs[i].checked = true;
                         }
                     }
+                },
+                weekfixed: {
+                    zh: "weekfixed",
+                    cn: "固定周期",
+                    template: function (Cron, tools) {
+                        let _div = $db.ctElement({
+                            p: tools, e: "div", c: ["explain"], ape: function () {
+                                $db.ctElement({
+                                    p: this, e: "input", c: ["dbUI-range"],
+                                    attr: [
+                                        { key: "name", value: "delayed" },
+                                        { key: "type", value: "text" },
+                                        { key: "format", value: Cron.range },
+                                        { key: "separator", value: "#" },
+                                    ]
+                                });
+                                $db.ctElement({ p: this, e: "label", c: ["annotation"] });
+                            }
+                        });
+                        function rangeChange() {
+                            try {
+                                let label = _div.getElementsByTagName("label")[0],
+                                    delayed = _div.getElementsByTagName("input")[0],
+                                    value = delayed.value,
+                                    start = $db.trim(value.split("#")[0]),
+                                    end = $db.trim(value.split("#")[1]);
+                                label.innerHTML = `第${end}${Cron.remark1}的${Cron.mapping.filter(x => x.p == Number(start))[0].n}执行一次`;
+                                if (Number(end) > 5) {
+                                    end = "5";
+                                    label.innerHTML += `<div style="color:red;">每个月最多只有${end}周</div>`;
+                                }
+                                Cron.value = `${start}#${end}`;
+                            } catch  {
+
+                            }
+                        }
+                        $db.rangeRender();
+                        _div.getElementsByTagName("input")[0].onchange = rangeChange;
+                        if (Cron.value.indexOf("#") > -1)
+                            _div.getElementsByTagName("input")[0].value = Cron.value;
+                        rangeChange();
+                    }
+                },
+                oldrange: {
+                    zh: "oldrange",
+                    cn: "周期",
+                    template: function (Cron, tools) {
+                        let _div = $db.ctElement({
+                            p: tools, e: "div", c: ["explain"], ape: function () {
+                                $db.ctElement({ p: this, e: "label", t: "从" });
+                                let left = $db.ctElement({
+                                    p: this, e: "input", c: ["criteria"],
+                                    attr: [{ key: "type", value: "text" }],
+                                    event: [{ key: "change", fc: oldchange }]
+                                });
+                                $db.ctElement({ p: this, e: "label", t: `${Cron.remark}到` });
+                                let right = $db.ctElement({
+                                    p: this, e: "input", c: ["criteria"],
+                                    attr: [{ key: "type", value: "text" }],
+                                    event: [{ key: "change", fc: oldchange }]
+                                });
+                                $db.ctElement({ p: this, e: "label", t: `${Cron.remark}每${Cron.remark1}执行一次` });
+                                function oldchange(e) {
+                                    let start = Cron.range.split("-")[0],
+                                        end = Cron.range.split("-")[1];
+                                    if (Number(left.value) > Number(end))
+                                        left.value = end;
+                                    if (Number(right.value) > Number(end))
+                                        right.value = end;
+                                    if (Number(left.value) < Number(start))
+                                        left.value = start;
+                                    if (Number(right.value) < Number(start))
+                                        right.value = start;
+                                    if (left.value == "" || !/^\d+$/.test(left.value))
+                                        return;
+                                    if (right.value == "" || !/^\d+$/.test(right.value))
+                                        return;
+                                    if (Number(left.value) > Number(right.value))
+                                        Cron.value = `${right.value}-${right.value}`;
+                                    else
+                                        Cron.value = `${left.value}-${right.value}`;
+                                }
+                                if (Cron.value.indexOf("-") > -1) {
+                                    let lval = Cron.value.split("-")[0],
+                                        rval = Cron.value.split("-")[1];
+                                    left.value = lval;
+                                    right.value = rval;
+                                }
+                            }
+                        });
+                    }
+                },
+                olddelayed: {
+                    zh: "olddelayed",
+                    cn: "延时",
+                    template: function (Cron, tools) {
+                        let _div = $db.ctElement({
+                            p: tools, e: "div", c: ["explain"], ape: function () {
+                                $db.ctElement({ p: this, e: "label", t: "从" });
+                                let left = $db.ctElement({
+                                    p: this, e: "input", c: ["criteria"],
+                                    attr: [{ key: "type", value: "text" }],
+                                    event: [{ key: "change", fc: oldchange }]
+                                });
+                                $db.ctElement({ p: this, e: "label", t: `${Cron.remark}开始,每` });
+                                let right = $db.ctElement({
+                                    p: this, e: "input", c: ["criteria"],
+                                    attr: [{ key: "type", value: "text" }],
+                                    event: [{ key: "change", fc: oldchange }]
+                                });
+                                $db.ctElement({ p: this, e: "label", t: `${Cron.remark1}执行一次` });
+                                function oldchange(e) {
+                                    let start = Cron.range.split("-")[0],
+                                        end = Cron.range.split("-")[1];
+                                    if (Number(left.value) > Number(end))
+                                        left.value = end;
+                                    if (Number(right.value) > Number(end))
+                                        right.value = end;
+                                    if (Number(left.value) < Number(start))
+                                        left.value = start;
+                                    if (Number(right.value) < Number(start))
+                                        right.value = start;
+                                    if (left.value == "" || !/^\d+$/.test(left.value))
+                                        return;
+                                    if (right.value == "" || !/^\d+$/.test(right.value))
+                                        return;
+                                    Cron.value = `${left.value}/${right.value}`;
+                                }
+                                if (Cron.value.indexOf("/") > -1) {
+                                    let lval = Cron.value.split("/")[0],
+                                        rval = Cron.value.split("/")[1];
+                                    left.value = lval;
+                                    right.value = rval;
+                                }
+                            }
+                        });
+                    }
+                },
+                oldweekfixed: {
+                    zh: "oldweekfixed",
+                    cn: "固定周期",
+                    template: function (Cron, tools) {
+                        let _div = $db.ctElement({
+                            p: tools, e: "div", c: ["explain"], ape: function () {
+                                $db.ctElement({ p: this, e: "label", t: "第" });
+                                let left = $db.ctElement({
+                                    p: this, e: "input", c: ["criteria"],
+                                    attr: [{ key: "type", value: "text" }],
+                                    event: [{ key: "change", fc: oldchange }]
+                                });
+                                $db.ctElement({ p: this, e: "label", t: `${Cron.remark1}的${Cron.remark}` });
+                                let right = $db.ctElement({
+                                    p: this, e: "input", c: ["criteria"],
+                                    attr: [{ key: "type", value: "text" }],
+                                    event: [{ key: "change", fc: oldchange }]
+                                });
+                                $db.ctElement({ p: this, e: "label", t: `执行一次` });
+                                function oldchange(e) {
+                                    let start = Cron.range.split("-")[0],
+                                        end = Cron.range.split("-")[1];
+                                    if (Number(left.value) > 5)
+                                        left.value = "5";
+                                    if (Number(right.value) > Number(end))
+                                        right.value = end;
+                                    if (Number(left.value) < Number(start))
+                                        left.value = start;
+                                    if (Number(right.value) < Number(start))
+                                        right.value = start;
+                                    if (left.value == "" || !/^\d+$/.test(left.value))
+                                        return;
+                                    if (right.value == "" || !/^\d+$/.test(right.value))
+                                        return;
+                                    Cron.value = `${right.value}#${left.value}`;
+                                }
+                                if (Cron.value.indexOf("#") > -1) {
+                                    let lval = Cron.value.split("#")[0],
+                                        rval = Cron.value.split("#")[1];
+                                    left.value = lval;
+                                    right.value = rval;
+                                }
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -267,7 +482,7 @@
                 target[key] = value;
                 if (target.verify)
                     eval(target.verify);
-                input.value = `${Class.Cron.ss.value} ${Class.Cron.mm.value} ${Class.Cron.hh.value} ${Class.Cron.dd.value} ${Class.Cron.MM.value} ${Class.Cron.ww.value} ${Class.Cron.yy.value}`;
+                input.value = `${Class.Cron.ss.value} ${Class.Cron.mm.value} ${Class.Cron.hh.value} ${Class.Cron.dd.value} ${Class.Cron.MM.value} ${Class.Cron.ww.value}${Class.Cron.yy.value == "*" ? "" : " " + Class.Cron.yy.value}`;
             }
         }, true);
 
@@ -345,11 +560,22 @@
                     else if (Cron.value.indexOf("/") > -1 && Cron.tabs[i] == "delayed") {
                         label.click();
                     }
+                    else if (Cron.value.indexOf("#") > -1 && Cron.tabs[i] == "weekfixed") {
+                        label.click();
+                    }
+                    else if (Cron.value.indexOf("-") > -1 && Cron.tabs[i] == "oldrange") {
+                        label.click();
+                    }
+                    else if (Cron.value.indexOf("/") > -1 && Cron.tabs[i] == "olddelayed") {
+                        label.click();
+                    }
+                    else if (Cron.value.indexOf("#") > -1 && Cron.tabs[i] == "oldweekfixed") {
+                        label.click();
+                    }
                     else if ((Cron.value.indexOf(",") > -1 || /^\d+$/.test(Cron.value)) && Cron.tabs[i] == "assign") {
                         label.click();
                     }
                 }
-
             }
 
             function varietyClick(e, Cron, Tool) {
@@ -359,6 +585,37 @@
                 if (Tool.template)
                     Tool.template(Cron, tools);
             }
+        }
+
+        //修改Cron栏 同步响应到实体
+        input.addEventListener("change", function () {
+            InitCronModule();
+        }, false);
+
+        //初始化Cron栏中的Cron到实体
+        function InitCronModule() {
+            let fields = input.value.split(" "),
+                second = fields[0],
+                minute = fields[1],
+                hours = fields[2],
+                day = fields[3],
+                month = fields[4],
+                week = fields[5],
+                year = fields[6];
+            if (Class.Cron.ss.value != second)
+                Class.Cron.ss.value = second;
+            if (Class.Cron.mm.value != minute)
+                Class.Cron.mm.value = minute;
+            if (Class.Cron.hh.value != hours)
+                Class.Cron.hh.value = hours;
+            if (Class.Cron.dd.value != day)
+                Class.Cron.dd.value = day;
+            if (Class.Cron.MM.value != month)
+                Class.Cron.MM.value = month;
+            if (Class.Cron.ww.value != week)
+                Class.Cron.ww.value = week;
+            if (Class.Cron.yy.value != year)
+                Class.Cron.yy.value = year;
         }
 
         //面板开关

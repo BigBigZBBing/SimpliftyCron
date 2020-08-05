@@ -1,7 +1,7 @@
 .dbUI-cron {
     position: relative;
     height: 30px;
-    width: 300px;
+    width: 370px;
     border: 1px solid lightgray;
     border-radius: 5px;
     user-select: none;
@@ -10,12 +10,13 @@
 }
 
 .dbUI-cron .cron-input {
-    width: 240px;
+    width: 200px;
     height: 30px;
     border-radius: 5px;
     border: 0;
     outline: none;
     padding: 0 10px;
+    padding-right: 160px;
 }
 
 .dbUI-cron .cron-select {
@@ -143,6 +144,16 @@
     height: 100%;
 }
 
+.dbUI-cron .cron-config .panel .tools .explain .criteria {
+    width: 30px;
+    border: 1px solid lightgray;
+    border-radius: 3px;
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
+    padding: 0 5px;
+}
+
 .dbUI-cron .cron-config .panel .tools .explain.assign {
     position: relative;
     display: flex;
@@ -159,9 +170,12 @@
 }
 
 .dbUI-cron .cron-config .panel .tools .annotation {
-    display: block;
+    display: flex !important;
+    flex-flow: column;
     height: 100%;
+    width: 340px;
     margin-left: 20px;
+    justify-content: center;
 }
 
 .dbUI-range {
@@ -178,6 +192,7 @@
     outline: none;
     padding: 0 18px;
     user-select: none;
+    text-align: center;
     -webkit-user-select: none;
     -moz-user-select: none;
 }
