@@ -27,27 +27,29 @@
                 if(Number(target.value)>Number(target.range.split("-")[1])){
                     target.value=target.range.split("-")[1];
                 }
-                for(let ikey in this){
-                    if(ikey == prev) break;
-                    if(target.value!=target.default&&this[ikey].value==this[ikey].default){
-                        if(ikey != "MM"){
-                            this[ikey].value=this[ikey].range.split("-")[0];
+                if(prev!="yy"){
+                    for(let ikey in this){
+                        if(ikey == prev) break;
+                        if(target.value!=target.default&&this[ikey].value==this[ikey].default){
+                            if(ikey != "MM"){
+                                this[ikey].value=this[ikey].range.split("-")[0];
+                            }
                         }
-                    }
-                    if(prev=="dd" && this["dd"].value == "?" && this["ww"].value == "?") {
-                        this["ww"].value="*";
-                    }
-                    if(prev=="dd" && this["dd"].value != "?") {
-                        this["ww"].value="?";
-                    }
-                    if(prev=="MM" && this["dd"].value != "?") {
-                        this["ww"].value="?";
-                    }
-                    if(prev=="ww" && this["ww"].value != "?" && this["dd"].value != "?") {
-                        this["dd"].value="?";
-                    }
-                    if(prev=="ww" && this["ww"].value == "?" && this["dd"].value == "?") {
-                        this["dd"].value="*";
+                        if(prev=="dd" && this["dd"].value == "?" && this["ww"].value == "?") {
+                            this["ww"].value="*";
+                        }
+                        if(prev=="dd" && this["dd"].value != "?") {
+                            this["ww"].value="?";
+                        }
+                        if(prev=="MM" && this["dd"].value != "?") {
+                            this["ww"].value="?";
+                        }
+                        if(prev=="ww" && this["ww"].value != "?" && this["dd"].value != "?") {
+                            this["dd"].value="?";
+                        }
+                        if(prev=="ww" && this["ww"].value == "?" && this["dd"].value == "?") {
+                            this["dd"].value="*";
+                        }
                     }
                 }
             }`;
