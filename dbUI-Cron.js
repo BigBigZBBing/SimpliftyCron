@@ -136,10 +136,6 @@
                     range: `${new Date().getFullYear()}-${Number(new Date().getFullYear() + 20)}`,
                     tabs: ["general", "oldrange"],
                     verify: Rule
-                },
-                smart: {
-                    title: "快捷",
-                    tabs: [],
                 }
             },
             //工具箱
