@@ -131,7 +131,8 @@
                     remark1: "年",
                     value: "",
                     default: "*",
-                    tabs: ["general"],
+                    range: `${new Date().getFullYear()}-${Number(new Date().getFullYear() + 20)}`,
+                    tabs: ["general", "oldrange"],
                     verify: Rule
                 },
                 smart: {
