@@ -71,7 +71,7 @@
     position: absolute;
     top: 35px;
     left: 0;
-    width: 420px;
+    width: 410px;
     height: auto;
     border: 1px solid lightgray;
     border-radius: 5px;
@@ -156,7 +156,17 @@
     user-select: none;
     -webkit-user-select: none;
     outline: none;
-    padding: 0 5px;
+    padding: 1px 5px;
+}
+
+.dbUI-cron .cron-config .panel .tools .explain .criterias {
+    width: 75px;
+    border: 1px solid lightgray;
+    border-radius: 3px;
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
+    padding: 1px 5px;
 }
 
 .dbUI-cron .cron-config .panel .tools .explain.assign {

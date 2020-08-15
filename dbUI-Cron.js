@@ -115,7 +115,7 @@
                     value: "",
                     default: "?",
                     range: "1-7",
-                    tabs: ["noassign", old + "range", old + "weekfixed", "assign"],
+                    tabs: ["noassign", old + "range", old + "weekfixed", "lastweek", "assign"],
                     verify: Rule,
                     mapping: [
                         { p: 1, n: "星期日" },
@@ -342,13 +342,13 @@
                                 });
                                 $db.ctElement({ p: this, e: "label", t: `${Cron.remark}最近的那个工作日` });
                                 function nearchange(e) {
-                                    if (Number(days.value) < 1) {
-                                        days.value = 1;
+                                    if (Number(this.value) < 1) {
+                                        this.value = 1;
                                     }
-                                    if (Number(days.value) > 31) {
-                                        days.value = 31;
+                                    if (Number(this.value) > 31) {
+                                        this.value = 31;
                                     }
-                                    Cron.value = days.value + "W";
+                                    Cron.value = this.value + "W";
                                 }
                             }
                         });
@@ -360,6 +360,32 @@
                     default: "L",
                     template: function (Cron, tools) {
                         $db.ctElement({ p: tools, e: "label", t: `每个月最后一天` });
+                    }
+                },
+                lastweek: {
+                    zh: "lastweek",
+                    cn: "最后一周",
+                    template: function (Cron, tools) {
+                        let _div = $db.ctElement({
+                            p: tools, e: "div", c: ["explain"], ape: function () {
+                                $db.ctElement({ p: this, e: "label", t: "每月最后一周的" });
+                                $db.ctElement({
+                                    p: this, e: "select", c: ["criterias"],
+                                    event: [{ key: "change", fc: lastchange }],
+                                    ape: function () {
+                                        $db.ctElement({ p: this, e: "option", attr: [{ key: "value", value: Cron.default }], t: "不指定" });
+                                        for (let t1 = 0; t1 < Cron.mapping.length; t1++) {
+                                            const e = Cron.mapping[t1];
+                                            $db.ctElement({ p: this, e: "option", attr: [{ key: "value", value: e.p }], t: e.n });
+                                        }
+                                    }
+                                });
+                                function lastchange(e) {
+                                    Cron.value = this.value + "L";
+                                    if (this.value == Cron.default) Cron.value = Cron.default;
+                                }
+                            }
+                        });
                     }
                 },
                 oldrange: {

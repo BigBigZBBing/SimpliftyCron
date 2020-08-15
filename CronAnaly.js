@@ -58,19 +58,27 @@
             while (true) {
                 if (c.Seconds[nowTime.getSeconds()] == 1 && c.Minutes[nowTime.getMinutes()] == 1 && c.Hours[nowTime.getHours()] == 1 && c.Month[nowTime.getMonth()] == 1 && c.Year[nowTime.getFullYear() - 2019] == 1) {
                     if (arr[3] != "?") {
-                        Days(c, arr[3], new Date(nowTime.getFullYear(), nowTime.getMonth(), 0).getDate(), nowTime);
+                        Days(c, arr[3], new Date(nowTime.getFullYear(), nowTime.getMonth() + 1, 0).getDate(), nowTime);
                         let DayOfWeek = ((nowTime.getDay()) + 6) % 7;
                         if (c.Days[nowTime.getDate() - 1] == 1 && c.Weeks[DayOfWeek] == 1) {
                             datetimes.push(new Date(nowTime));
                         }
+                        else if (c.Days[nowTime.getDate() - 1] == 2 && c.Weeks[DayOfWeek] == 1) {
+                            let daydate = new Date(nowTime);
+                            daydate.setDate(daydate.getDate() - 1);
+                            datetimes.push(daydate);
+                        }
+                        else if (c.Days[nowTime.getDate() - 1] == 3 && c.Weeks[DayOfWeek] == 1) {
+                            let daydate = new Date(nowTime);
+                            daydate.setDate(daydate.getDate() + 1);
+                            datetimes.push(daydate);
+                        }
                     }
                     else {
-                        Weeks(c, arr[5], new Date(nowTime.getFullYear(), nowTime.getMonth(), 0).getDate(), nowTime);
+                        Weeks(c, arr[5], new Date(nowTime.getFullYear(), nowTime.getMonth() + 1, 0).getDate(), nowTime);
                         let DayOfWeek = ((nowTime.getDay()) + 6) % 7;
                         if (c.Days[nowTime.getDate() - 1] == 1 && c.Weeks[DayOfWeek] == 1) {
-                            let weekdate = new Date(nowTime);
-                            weekdate.setDate(weekdate.getDate() - 1);
-                            datetimes.push(weekdate);
+                            datetimes.push(new Date(nowTime));
                         }
                     }
                 }
@@ -271,11 +279,22 @@
             }
         }
         else if (str.indexOf("L") > -1) {
-            let i = str.Replace("L", "") == "" ? 0 : Number(str.Replace("L", ""));
-            c.Days[len - 1 - i] = 1;
+            let i = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            c.Days[i - 1] = 1;
         }
         else if (str.indexOf("W") > -1) {
-            c.Days[len - 1] = 1;
+            let i = str.replace("W", "") == "" ? 0 : Number(str.replace("W", ""));
+            if (now.getDate() == i) {
+                let DayOfWeek = ((now.getDay()) + 6) % 7;
+                if (DayOfWeek == 5) {
+                    c.Days[i - 1] = 2;
+                }
+                else if (DayOfWeek == 6) {
+                    c.Days[i - 1] = 3;
+                } else {
+                    c.Days[i - 1] = 1;
+                }
+            }
         }
         else {
             c.Days[Number(str) - 1] = 1;
@@ -300,21 +319,26 @@
             }
         }
         else if (str.indexOf("L") > -1) {
-            let i = str.Replace("L", "") == "" ? 0 : Number(str.Replace("L", ""));
-            if (i == 0) {
+            let i = str.replace("L", "") == "" ? 0 : Number(str.replace("L", ""));
+            if (i == 0 || i == 1) {
                 c.Weeks[6] = 1;
             }
             else {
-                c.Weeks[i - 1] = 1;
-                c.Days[GetLastWeek(i, now) - 1] = 1;
-                return;
+                c.Weeks[i - 2] = 1;
             }
+            c.Days[GetLastWeek(i, now) - 1] = 1;
+            return;
         }
         else if (str.indexOf("#") > -1) {
             let i = Number(str.split("#")[0]);
             let j = Number(str.split("#")[1]);
-            c.Weeks[i - 1] = 1;
-            c.Days[GetWeek(i - 1, j, now)] = 1;
+            if (i == 1) {
+                c.Weeks[6] = 1;
+            }
+            else {
+                c.Weeks[i - 2] = 1;
+            }
+            c.Days[GetWeek(i - 2, j, now)] = 1;
             return;
         }
         else {
@@ -325,13 +349,22 @@
         }
     }
     function GetLastWeek(i, now) {
-        let d = new Date(now);
-        now.setDate(now.getDate() + (1 - now.getDate()));
-        d.setMonth(d.getMonth() + 1);
-        d.setSeconds(d.getSeconds() - 1);
-        let DayOfWeek = (((d.getDay()) + 6) % 7) + 1;
-        let a = DayOfWeek >= i ? DayOfWeek - i : 7 + DayOfWeek - i;
-        return new Date(now.getFullYear(), now.getMonth(), 0).getDate() - a;
+        let d = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        let last = d.getDate();
+        let week = d.getDay();
+        let mapping = [7, 1, 2, 3, 4, 5, 6];
+
+        if (mapping[week] == mapping[i - 1]) {
+            return d.getDate();
+        }
+        else if (mapping[week] > mapping[i - 1]) {
+            d.setDate(d.getDate() - (mapping[week] - mapping[i - 1]));
+            return d.getDate();
+        }
+        else if (mapping[week] < mapping[i - 1]) {
+            d.setDate(d.getDate() - (7 - (mapping[i - 1] - mapping[week])));
+            return d.getDate();
+        }
     }
     function GetWeek(i, j, now) {
         let day = 0;
