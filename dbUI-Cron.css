@@ -71,7 +71,7 @@
     position: absolute;
     top: 35px;
     left: 0;
-    width: 470px;
+    width: 420px;
     height: auto;
     border: 1px solid lightgray;
     border-radius: 5px;
@@ -178,7 +178,7 @@
     display: flex !important;
     flex-flow: column;
     height: 100%;
-    width: 340px;
+    width: 270px;
     margin-left: 20px;
     justify-content: center;
 }
