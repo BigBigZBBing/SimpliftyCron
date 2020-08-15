@@ -350,6 +350,10 @@
                                     }
                                     Cron.value = this.value + "W";
                                 }
+                                if (Cron.value.indexOf("W") > -1) {
+                                    let val = Number(Cron.value.replace("W", ""));
+                                    days.value = val;
+                                }
                             }
                         });
                     }
@@ -369,7 +373,7 @@
                         let _div = $db.ctElement({
                             p: tools, e: "div", c: ["explain"], ape: function () {
                                 $db.ctElement({ p: this, e: "label", t: "每月最后一周的" });
-                                $db.ctElement({
+                                let select = $db.ctElement({
                                     p: this, e: "select", c: ["criterias"],
                                     event: [{ key: "change", fc: lastchange }],
                                     ape: function () {
@@ -383,6 +387,15 @@
                                 function lastchange(e) {
                                     Cron.value = this.value + "L";
                                     if (this.value == Cron.default) Cron.value = Cron.default;
+                                }
+                                if (Cron.value.indexOf("L") > -1) {
+                                    let val = Number(Cron.value.replace("L", ""));
+                                    for (let t1 = 0; t1 < select.options.length; t1++) {
+                                        const e = select.options[t1];
+                                        if (e.value == val) {
+                                            e.selected = true;
+                                        }
+                                    }
                                 }
                             }
                         });
@@ -631,6 +644,15 @@
                     else if (Cron.value.indexOf("#") > -1 && Cron.tabs[i] == "oldweekfixed") {
                         label.click();
                     }
+                    else if (Cron.value.indexOf("W") > -1 && Cron.tabs[i] == "worknear") {
+                        label.click();
+                    }
+                    else if (Cron.value.indexOf("L") > -1 && Cron.tabs[i] == "lastday") {
+                        label.click();
+                    }
+                    else if (Cron.value.indexOf("L") > -1 && Cron.tabs[i] == "lastweek") {
+                        label.click();
+                    }
                     else if ((Cron.value.indexOf(",") > -1 || /^\d+$/.test(Cron.value)) && Cron.tabs[i] == "assign") {
                         label.click();
                     }
@@ -673,7 +695,7 @@
                 Class.Cron.MM.value = month;
             if (Class.Cron.ww.value != week)
                 Class.Cron.ww.value = week;
-            if (Class.Cron.yy.value != year)
+            if (year && Class.Cron.yy.value != year)
                 Class.Cron.yy.value = year;
         }
 
