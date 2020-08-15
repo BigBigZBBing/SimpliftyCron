@@ -93,7 +93,7 @@
                     value: "",
                     default: "*",
                     range: "1-31",
-                    tabs: ["general", "noassign", old + "range", old + "delayed", "assign"],
+                    tabs: ["general", "noassign", old + "range", old + "delayed", "worknear", "lastday", "assign"],
                     verify: Rule
                 },
                 MM: {
@@ -327,6 +327,40 @@
                         if (Cron.value.indexOf("#") > -1)
                             _div.getElementsByTagName("input")[0].value = Cron.value;
                         rangeChange();
+                    }
+                },
+                worknear: {
+                    zh: "worknear",
+                    cn: "最近工作日",
+                    template: function (Cron, tools) {
+                        let _div = $db.ctElement({
+                            p: tools, e: "div", c: ["explain"], ape: function () {
+                                $db.ctElement({ p: this, e: "label", t: "每月" });
+                                let days = $db.ctElement({
+                                    p: this, e: "input", c: ["criteria"],
+                                    attr: [{ key: "type", value: "text" }],
+                                    event: [{ key: "change", fc: nearchange }]
+                                });
+                                $db.ctElement({ p: this, e: "label", t: `${Cron.remark}最近的那个工作日` });
+                                function nearchange(e) {
+                                    if (Number(days.value) < 1) {
+                                        days.value = 1;
+                                    }
+                                    if (Number(days.value) > 31) {
+                                        days.value = 31;
+                                    }
+                                    Cron.value = days.value + "W";
+                                }
+                            }
+                        });
+                    }
+                },
+                lastday: {
+                    zh: "lastday",
+                    cn: "最后一天",
+                    default: "L",
+                    template: function (Cron, tools) {
+                        $db.ctElement({ p: tools, e: "label", t: `每个月最后一天` });
                     }
                 },
                 oldrange: {

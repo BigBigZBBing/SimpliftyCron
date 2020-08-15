@@ -72,7 +72,7 @@
     top: 35px;
     left: 0;
     width: 470px;
-    height: 160px;
+    height: auto;
     border: 1px solid lightgray;
     border-radius: 5px;
     padding: 5px;
@@ -117,11 +117,16 @@
 
 .dbUI-cron .cron-config .panel {
     position: relative;
-    height: 120px;
+    height: auto;
 }
 
 .dbUI-cron .cron-config .panel .variety {
-    height: 40px;
+    height: auto;
+    min-height: 40px;
+}
+
+.dbUI-cron .cron-config .panel .variety label {
+    white-space: nowrap;
 }
 
 .dbUI-cron .cron-config .panel .variety input[type="radio"] {
