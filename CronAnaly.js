@@ -73,6 +73,11 @@
                             daydate.setDate(daydate.getDate() + 1);
                             datetimes.push(daydate);
                         }
+                        else if (c.Days[nowTime.getDate() - 1] == 4 && c.Weeks[DayOfWeek] == 1) {
+                            let daydate = new Date(nowTime);
+                            daydate.setDate(daydate.getDate() - 2);
+                            datetimes.push(daydate);
+                        }
                     }
                     else {
                         Weeks(c, arr[5], new Date(nowTime.getFullYear(), nowTime.getMonth() + 1, 0).getDate(), nowTime);
@@ -276,6 +281,19 @@
         else if (str.indexOf(",") > -1) {
             for (let i = 0; i < str.split(",").length; i++) {
                 c.Days[Number(str.split(",")[i]) - 1] = 1;
+            }
+        }
+        else if (str.indexOf("LW") > -1) {
+            let i = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            let week = now.getDay();
+            if (week == 0) {
+                c.Days[i - 1] = 4;
+            }
+            else if (week == 6) {
+                c.Days[i - 1] = 2;
+            }
+            else {
+                c.Days[i - 1] = 1;
             }
         }
         else if (str.indexOf("L") > -1) {

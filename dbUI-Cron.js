@@ -95,7 +95,7 @@
                     value: "",
                     default: "*",
                     range: "1-31",
-                    tabs: ["general", "noassign", old + "range", old + "delayed", "worknear", "lastday", "assign"],
+                    tabs: ["general", "noassign", old + "range", old + "delayed", "nearwork", "lastday", "lastwork", "assign"],
                     verify: Rule
                 },
                 MM: {
@@ -328,8 +328,8 @@
                         rangeChange();
                     }
                 },
-                worknear: {
-                    zh: "worknear",
+                nearwork: {
+                    zh: "nearwork",
                     cn: "最近工作日",
                     template: function (Cron, tools) {
                         let _div = $db.ctElement({
@@ -356,6 +356,14 @@
                                 }
                             }
                         });
+                    }
+                },
+                lastwork: {
+                    zh: "lastwork",
+                    cn: "最后工作日",
+                    default: "LW",
+                    template: function (Cron, tools) {
+                        $db.ctElement({ p: tools, e: "label", t: `每个月最后一个工作日` });
                     }
                 },
                 lastday: {
@@ -644,10 +652,13 @@
                     else if (Cron.value.indexOf("#") > -1 && Cron.tabs[i] == "oldweekfixed") {
                         label.click();
                     }
-                    else if (Cron.value.indexOf("W") > -1 && Cron.tabs[i] == "worknear") {
+                    else if (Cron.value == "LW" && Cron.tabs[i] == "lastwork") {
                         label.click();
                     }
-                    else if (Cron.value.indexOf("L") > -1 && Cron.tabs[i] == "lastday") {
+                    else if (Cron.value == "L" && Cron.tabs[i] == "lastday") {
+                        label.click();
+                    }
+                    else if (Cron.value.indexOf("W") > -1 && Cron.tabs[i] == "nearwork") {
                         label.click();
                     }
                     else if (Cron.value.indexOf("L") > -1 && Cron.tabs[i] == "lastweek") {
