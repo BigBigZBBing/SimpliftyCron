@@ -105,18 +105,115 @@
 
     function speed(arr, now) {
         let addTime = 0;
+        if (/^\d+$/.test(arr[1])) {
+            if (now.getMinutes() < Number(arr[1])) {
+                addTime += (Number(arr[1]) * 60) - (now.getMinutes() * 60) - now.getSeconds();
+            }
+            else if (now.getMinutes() > Number(arr[1])) {
+                addTime += ((60 * 60) - (now.getMinutes() * 60)) + (Number(arr[1]) * 60) - now.getSeconds();
+            }
+            else {
+                addTime += speedSecond(arr, now);
+            }
+        }
+        else if (arr[1].indexOf(",") > -1) {
+            let times = arr[1].split(",");
+            if (now.getMinutes() < Number(times[0])) {
+                addTime += (Number(times[0]) * 60) - (now.getMinutes() * 60) - now.getSeconds();
+            }
+            else if (now.getMinutes() >= Number(times[times.length - 1])) {
+                addTime += ((60 * 60) - (now.getMinutes() * 60)) + (Number(times[0]) * 60) - now.getSeconds();
+            }
+            else if (times.indexOf(now.getMinutes() + "") > -1) {
+                addTime += speedSecond(arr, now);
+            }
+            else {
+                for (let t1 = 0; t1 < times.length; t1++) {
+                    const t = Number(times[t1]);
+                    if (now.getMinutes() < t) {
+                        addTime += (t * 60) - (now.getMinutes() * 60) - now.getSeconds();
+                        break;
+                    }
+                }
+            }
+        }
+        else if (arr[1].indexOf("-") > -1) {
+            let l = Number(arr[1].split("-")[0]),
+                r = Number(arr[1].split("-")[1]);
+            if (now.getMinutes() >= r) {
+                addTime += ((60 * 60) - (now.getMinutes() * 60)) + (l * 60) - now.getSeconds();
+            }
+            else {
+                addTime += speedSecond(arr, now);
+            }
+        }
+        else if (arr[1].indexOf("/") > -1) {
+            let l = Number(arr[0].split("/")[0]),
+                r = Number(arr[0].split("/")[1]);
+            if (now.getMinutes() >= l) {
+                let pos = [];
+                let t = now.getMinutes();
+                while (true) {
+                    if (t <= 59) {
+                        pos.push(t);
+                        t += r;
+                    }
+                    else { break; }
+                }
+                if (pos.indexOf(now.getMinutes()) > -1) {
+                    addTime += speedSecond(arr, now);
+                }
+                else {
+                    for (let t1 = 0; t1 < pos.length; t1++) {
+                        const tt = pos[t1];
+                        if (now.getMinutes() < tt) {
+                            addTime += (tt * 60) - (now.getMinutes() * 60) - now.getSeconds();
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (now.getMinutes() < l) {
+                addTime += (l * 60) - (now.getMinutes() * 60) - now.getSeconds();
+            }
+        }
+
+        if (addTime == 0) addTime = 1;
+        return addTime;
+    }
+
+    function speedSecond(arr, now) {
+        let addTime = 0;
         if (/^\d+$/.test(arr[0])) {
-            if (now.getSeconds() == Number(arr[0])) {
+            if (now.getSeconds() < Number(arr[0])) {
+                addTime += Number(arr[0]) - now.getSeconds();
+            }
+            else if (now.getSeconds() > Number(arr[0])) {
+                addTime += (60 - now.getSeconds()) + Number(arr[0]);
+            }
+            else if (now.getSeconds() == Number(arr[0])) {
                 addTime += 60;
             }
         }
         else if (arr[0].indexOf(",") > -1) {
             let times = arr[0].split(",");
-            if (now.getSeconds() >= Number(times[times.length - 1])) {
+            if (now.getSeconds() < Number(times[0])) {
+                addTime += Number(times[0]) - now.getSeconds();
+            }
+            else if (now.getSeconds() >= Number(times[times.length - 1])) {
                 addTime += (60 - now.getSeconds()) + Number(times[0]);
             }
             else if (times.indexOf(now.getSeconds() + "") > -1) {
                 addTime += Number(times[Number(times.indexOf(now.getSeconds() + "")) + 1]) - now.getSeconds();
+            }
+            else {
+                for (let t1 = 0; t1 < times.length; t1++) {
+                    const t = Number(times[t1]);
+                    if (now.getSeconds() < t) {
+                        addTime += t - now.getSeconds();
+                        break;
+                    }
+                }
             }
         }
         else if (arr[0].indexOf("-") > -1) {
@@ -131,17 +228,15 @@
                 r = Number(arr[0].split("/")[1]);
             if (now.getSeconds() >= l) {
                 let i = now.getSeconds() + r;
-                if (i < 60) {
+                if (i <= 59) {
                     addTime += r;
                 }
-                else if (i == 60) {
-                    addTime += r + l;
-                }
-                else if (i > 60) {
-                    addTime += (r - (i - 60)) + l;
-                }
+            }
+            else if (now.getSeconds() < l) {
+                addTime += l - now.getSeconds();
             }
         }
+
         if (addTime == 0) addTime = 1;
         return addTime;
     }
@@ -178,6 +273,7 @@
             c.Seconds[Number(str)] = 1;
         }
     }
+
     function Minutes(c, str) {
         if (str == "*") {
             for (let i = 0; i < 60; i++) {
@@ -210,6 +306,7 @@
             c.Minutes[Number(str)] = 1;
         }
     }
+
     function Hours(c, str) {
         if (str == "*") {
             for (let i = 0; i < 24; i++) {
@@ -242,6 +339,7 @@
             c.Hours[Number(str)] = 1;
         }
     }
+
     function Month(c, str) {
         if (str == "*") {
             for (let i = 0; i < 12; i++) {
@@ -274,6 +372,7 @@
             c.Month[Number(str) - 1] = 1;
         }
     }
+
     function Year(c, str) {
         if (str == null || str == "*") {
             for (let i = 0; i < 80; i++) {
@@ -291,6 +390,7 @@
             c.Year[Number(str) - 2019] = 1;
         }
     }
+
     function Days(c, str, len, now) {
         for (let i = 0; i < 7; i++) {
             c.Weeks[i] = 1;
@@ -357,6 +457,7 @@
             c.Days[Number(str) - 1] = 1;
         }
     }
+
     function Weeks(c, str, len, now) {
         if (str == "*" || str == "?") {
             for (let i = 0; i < 7; i++) {
@@ -405,6 +506,7 @@
             c.Days[i] = 1;
         }
     }
+
     function GetLastWeek(i, now) {
         let d = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         let last = d.getDate();
@@ -423,6 +525,7 @@
             return d.getDate();
         }
     }
+
     function GetWeek(i, j, now) {
         let day = 0;
         let d = new Date(now.getFullYear(), now.getMonth(), 1);
