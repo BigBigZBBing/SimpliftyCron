@@ -56,7 +56,11 @@
             }
             let addtime = 1;
             while (true) {
-                if (c.Seconds[nowTime.getSeconds()] == 1 && c.Minutes[nowTime.getMinutes()] == 1 && c.Hours[nowTime.getHours()] == 1 && c.Month[nowTime.getMonth()] == 1 && c.Year[nowTime.getFullYear() - 2019] == 1) {
+                if (c.Seconds[nowTime.getSeconds()] == 1
+                    && c.Minutes[nowTime.getMinutes()] == 1
+                    && c.Hours[nowTime.getHours()] == 1
+                    && c.Month[nowTime.getMonth()] == 1
+                    && c.Year[nowTime.getFullYear() - new Date().getFullYear()] == 1) {
                     if (arr[3] != "?") {
                         Days(c, arr[3], new Date(nowTime.getFullYear(), nowTime.getMonth() + 1, 0).getDate(), nowTime);
                         let DayOfWeek = ((nowTime.getDay()) + 6) % 7;
@@ -91,21 +95,56 @@
                     break;
                 }
                 c.Init();
-                if (arr[1].indexOf("-") == -1 && arr[1].indexOf(",") == -1 && arr[1].indexOf("*") == -1 && arr[1].indexOf("/") == -1) {
-                    if (nowTime.getMinutes() == Number(arr[1])) {
-                        addtime = 3600;
-                    }
-                }
-                else if (arr[0] == "0" && nowTime.getSeconds() == 0) {
-                    addtime = 60;
-                }
-                nowTime.setSeconds(nowTime.getSeconds() + addtime);
+                nowTime.setSeconds(nowTime.getSeconds() + speed(arr, nowTime));
             }
             return datetimes;
         } catch (error) {
-
+            console.log(error);
         }
     } $db.CronAnalytice = CronAnalytice;
+
+    function speed(arr, now) {
+        let addTime = 0;
+        if (/^\d+$/.test(arr[0])) {
+            if (now.getSeconds() == Number(arr[0])) {
+                addTime += 60;
+            }
+        }
+        else if (arr[0].indexOf(",") > -1) {
+            let times = arr[0].split(",");
+            if (now.getSeconds() >= Number(times[times.length - 1])) {
+                addTime += (60 - now.getSeconds()) + Number(times[0]);
+            }
+            else if (times.indexOf(now.getSeconds() + "") > -1) {
+                addTime += Number(times[Number(times.indexOf(now.getSeconds() + "")) + 1]) - now.getSeconds();
+            }
+        }
+        else if (arr[0].indexOf("-") > -1) {
+            let l = Number(arr[0].split("-")[0]),
+                r = Number(arr[0].split("-")[1]);
+            if (now.getSeconds() >= r) {
+                addTime += (60 - now.getSeconds()) + l;
+            }
+        }
+        else if (arr[0].indexOf("/") > -1) {
+            let l = Number(arr[0].split("/")[0]),
+                r = Number(arr[0].split("/")[1]);
+            if (now.getSeconds() >= l) {
+                let i = now.getSeconds() + r;
+                if (i < 60) {
+                    addTime += r;
+                }
+                else if (i == 60) {
+                    addTime += r + l;
+                }
+                else if (i > 60) {
+                    addTime += (r - (i - 60)) + l;
+                }
+            }
+        }
+        if (addTime == 0) addTime = 1;
+        return addTime;
+    }
 
     function Seconds(c, str) {
         if (str == "*") {
