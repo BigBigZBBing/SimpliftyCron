@@ -251,27 +251,31 @@
                                         container = this;
                                     for (let i = start; i <= end; i++) {
                                         $db.ctElement({
-                                            p: this, e: "label", event: [
-                                                {
-                                                    key: "click", fc: function () {
-                                                        let checkboxs = container.getElementsByTagName("input");
-                                                        let res = [];
-                                                        for (let t = 0; t < checkboxs.length; t++) {
-                                                            const e = checkboxs[t];
-                                                            if (e.checked)
-                                                                res.push(e.value);
-                                                        }
-                                                        Cron.value = res.join(",");
-                                                    }
-                                                }
-                                            ], ape: function () {
+                                            p: this, e: "div", c: ["grain"], ape: function () {
                                                 $db.ctElement({
-                                                    p: this, e: "input", attr: [
-                                                        { key: "type", value: "checkbox" },
-                                                        { key: "value", value: i }
-                                                    ]
+                                                    p: this, e: "label", event: [
+                                                        {
+                                                            key: "click", fc: function () {
+                                                                let checkboxs = container.getElementsByTagName("input");
+                                                                let res = [];
+                                                                for (let t = 0; t < checkboxs.length; t++) {
+                                                                    const e = checkboxs[t];
+                                                                    if (e.checked)
+                                                                        res.push(e.value);
+                                                                }
+                                                                Cron.value = res.join(",");
+                                                            }
+                                                        }
+                                                    ], ape: function () {
+                                                        $db.ctElement({
+                                                            p: this, e: "input", attr: [
+                                                                { key: "type", value: "checkbox" },
+                                                                { key: "value", value: i }
+                                                            ]
+                                                        });
+                                                        this.innerHTML += i;
+                                                    }
                                                 });
-                                                this.innerHTML += i;
                                             }
                                         });
                                     }

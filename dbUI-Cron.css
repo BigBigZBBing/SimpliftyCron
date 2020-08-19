@@ -179,7 +179,12 @@
     overflow-y: scroll;
 }
 
-.dbUI-cron .cron-config .panel .tools .explain label {
+.dbUI-cron .cron-config .panel .tools .explain .grain {
+    display: block;
+    min-width: 40px;
+}
+
+.dbUI-cron .cron-config .panel .tools .explain .grain label {
     display: block;
     white-space: nowrap;
 }
