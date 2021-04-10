@@ -134,7 +134,7 @@
                     value: "",
                     default: "*",
                     range: `${new Date().getFullYear()}-${Number(new Date().getFullYear() + 20)}`,
-                    tabs: ["general", "oldrange"],
+                    // tabs: ["general", "oldrange"],
                     verify: Rule
                 }
             },
@@ -228,7 +228,7 @@
                                     end = $db.trim(value.split("/")[1]);
                                 label.innerText = `从${start}${Cron.remark}开始,每${Number(end) == 0 ? "1" : end}${Cron.remark1}执行一次`;
                                 Cron.value = `${start}/${end}`;
-                            } catch  {
+                            } catch {
 
                             }
                         }
@@ -321,7 +321,7 @@
                                     label.innerHTML += `<div style="color:red;">每个月最多只有${end}周</div>`;
                                 }
                                 Cron.value = `${start}#${end}`;
-                            } catch  {
+                            } catch {
 
                             }
                         }
@@ -356,7 +356,7 @@
                                 }
                                 if (Cron.value.indexOf("W") > -1) {
                                     let val = Number(Cron.value.replace("W", ""));
-                                    days.value = val;
+                                    days.value = isNaN(val) ? "" : val;
                                 }
                             }
                         });
