@@ -468,7 +468,7 @@
             let begin = Number(str.split("-")[0]);
             let end = Number(str.split("-")[1]);
             for (let i = begin; i <= end; i++) {
-                c.Weeks[i - 1] = 1;
+                c.Weeks[i - 2] = 1;
             }
         }
         else if (str.indexOf(",") > -1) {
